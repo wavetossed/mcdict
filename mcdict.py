@@ -1,8 +1,7 @@
 import memcache
 import collections
 
-#import telnetlib
-
+__version__ = "1.01"
 
 def get_stats(self, stat_args = None):
         '''Get statistics from each of the servers.
@@ -43,7 +42,6 @@ if len(inspect.getargspec(memcache.Client.get_stats).args) == 1:
 
 
 class MCDict(collections.MutableMapping):
-    __version__ = "1.01"
     def __init__(self, *args, **kwargs):
 	'''pass through memcache connection params'''
         if "mcaddress" not in  kwargs:

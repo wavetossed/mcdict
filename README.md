@@ -8,7 +8,7 @@ All the memcache limitations are preserved, e.g. keys must be strings no longer 
 Basic usage:
 
     import mcdict
-    mc = mcdict.MCDict
+    mc = mcdict.MCDict()
 
 By default, it connects to localhost on port 11211. If you need to specify a host and/or port:
 
