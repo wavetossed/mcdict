@@ -1,0 +1,10 @@
+Metadata-Version: 1.0
+Name: mcdict
+Version: 1.01
+Summary: A dictionary interface to memcached servers
+Home-page: http://github.com/wavetossed/mcdict
+Author: Michael Dillon
+Author-email: wavetossed@googlemail.com
+License: MIT Licence
+Description: This library provides a subclass of MutableMapping that behaves as much like a Python dict as possible but which stores its key,value pairs in a memcached server. The library mostly uses python-memcached to access the server, although the "keys()" method requires telnetting directly to the server. Beware of runnin the unittests on a large memcache because it begins by clearing out all keys, and due to quirks of the memcache implementation, it takes some time to really clear them. The main limitations are that keys must be strings, and it is possible for a non-existent key to return a value of None.
+Platform: ALL
