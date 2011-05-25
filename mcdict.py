@@ -1,8 +1,45 @@
 import memcache
 import collections
 
-import telnetlib
+#import telnetlib
 
+
+def get_stats(self, stat_args = None):
+        '''Get statistics from each of the servers.
+
+        @param stat_args: Additional arguments to pass to the memcache
+            "stats" command.
+
+        @return: A list of tuples ( server_identifier, stats_dictionary ).
+            The dictionary contains a number of name/value pairs specifying
+            the name of the status field and the string value associated with
+            it.  The values are not converted from strings.
+        '''
+        import socket
+        data = []
+        for s in self.servers:
+            if not s.connect(): continue
+            if s.family == socket.AF_INET:
+                name = '%s:%s (%s)' % ( s.ip, s.port, s.weight )
+            else:
+                name = 'unix:%s (%s)' % ( s.address, s.weight )
+            if not stat_args:
+                s.send_cmd('stats')
+            else:
+                s.send_cmd('stats ' + stat_args)
+            serverData = {}
+            data.append(( name, serverData ))
+            readline = s.readline
+            while 1:
+                line = readline()
+                if not line or line.strip() == 'END': break
+                stats = line.split(' ', 2)
+                serverData[stats[1]] = stats[2]
+        return(data)
+
+import inspect # if this memcache library is old, monkey patch it
+if len(inspect.getargspec(memcache.Client.get_stats).args) == 1:
+    memcache.Client.get_stats = get_stats # add method to memcache library
 
 
 class MCDict(collections.MutableMapping):
@@ -55,22 +92,26 @@ class MCDict(collections.MutableMapping):
 
     def keys(self):
         '''not available in the memcache protocol so we get it via telnet'''
-	self.tn = telnetlib.Telnet(self.host, self.port)
-	def wcmd(cmd):
-            self.tn.write("%s\n" % cmd)
-            return self.tn.read_until('END')
+        #self.tn = telnetlib.Telnet(self.host, self.port)
+        #def wcmd(cmd):
+        #    self.tn.write("%s\n" % cmd)
+        #    return self.tn.read_until('END')
 
 	def key_details():
             ' Return a list of tuples containing keys and details '
-            cmd = 'stats cachedump %s 2000000'
-            ids = [id.split()[1].split(":")[1] for id in wcmd("stats items").split("\r\n")  if not id.startswith("END")]
+            #cmd = 'stats cachedump %s 2000000'
+            cmd = 'cachedump %s 2000000'
+            #ids = [id.split()[1].split(":")[1] for id in wcmd("stats items").split("\r\n")  if not id.startswith("END")]
+            ids = [id.split(":")[1] for id in
+                    self.mc.get_stats(stat_args="items")[0][1].keys() ]
             ids = set(ids)
             #for key in [id.split()[1] for id in wcmd(cmd % id).split()]:
             #keys = [[key.split()[1] for key in 
             keys = []
             for id in ids:
-                res = wcmd(cmd % id).split("\r\n")
-                keys.extend([key.split()[1] for key in res if key != '' and not key.startswith("END")])
+                #res = wcmd(cmd % id).split("\r\n")
+                res = self.mc.get_stats(stat_args=cmd % id)[0][1]
+                keys.extend([key for key in res if key != '' ])
             return keys
 
         return key_details()
@@ -101,9 +142,11 @@ if __name__ == "__main__":
         '''test the MCDict class'''
 
         def setUp(self):
-            self.mc = MCDict()
+            # we don't use the usual address because this unittest begins by
+            # clearing the cache.
+            self.mc = MCDict(mcaddress="127.0.0.1:5211")
             self.mc.flush_all()
-            for k in self.mc.keys(): # we have to do this to make all the keys go away
+            for k in self.mc.keys(): # delete them or all keys will return None
                 self.mc.mc.delete(k) # use memcached's delete method
 
         def failOnKeyError(self):
@@ -133,3 +176,5 @@ if __name__ == "__main__":
     unittest.TextTestRunner(verbosity=2).run(suite())
     print MCDict().keys()
     print MCDict().items()
+
+

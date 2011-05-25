@@ -1,38 +1,41 @@
-# python-memcached-stats
+# mcdict
 
-Python class to gather stats and slab keys from memcached via the memcached telnet interface
+Python class to access a memcache as if it was a dict. This implementation includes the keys() method.
+All the memcache limitations are preserved, e.g. keys must be strings no longer than 250 bytes.
 
 ## Usage
 
 Basic usage:
 
-    from memcached_stats import MemcachedStats
-    mem = MemcachedStats()
+    import mcdict
+    mc = mcdict.MCDict
 
 By default, it connects to localhost on port 11211. If you need to specify a host and/or port:
 
-    mem = MemcachedStats('1.2.3.4', '11211')
+    mc = mcdict.MCDict('127.0.0.1', '5211')
 
-Retrieve a dict containing the current stats from memcached:
+Access the underlying memcache Client object (note second mc)
 
-    >>> mem.stats()
+    >>> mc.mc.stats()
     {'accepting_conns': '1',
      'auth_cmds': '0',
      'auth_errors': '0',
      ... }
 
 Retrieve a list of keys currently in use:
+(note that this will cause big memcaches to block until it completes and this won't provide a complete
+list of keys on very big memcaches)
 
-    >>> mem.keys()
-    ['key-1',
-     'key-2',
-     'key-3',
+    >>> mc.keys()
+    ['mummy',
+     'daddy',
+     'masha',
      ... ]
 
 ## Installation
 
-    pip install 'git+git://github.com/dlrust/python-memcached-stats.git'
+    pip install 'git+git://github.com/wavetossed/mcdict.git'
 
 ## License
 
-python-memcached-stats is released under the [MIT license](http://creativecommons.org/licenses/MIT/).
+mcdict is released under the [MIT license](http://creativecommons.org/licenses/MIT/).
