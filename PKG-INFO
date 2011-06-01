@@ -1,6 +1,6 @@
 Metadata-Version: 1.0
 Name: mcdict
-Version: 1.01
+Version: 1.02
 Summary: A dictionary interface to memcached servers
 Home-page: http://github.com/wavetossed/mcdict
 Author: Michael Dillon
