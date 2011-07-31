@@ -9,14 +9,16 @@ Basic usage:
 
     import mcdict
     mc = mcdict.MCDict()
+    mc["mummy"] = "Olena"
+    print mc["mummy"]
 
 By default, it connects to localhost on port 11211. If you need to specify a host and/or port:
 
-    mc = mcdict.MCDict('127.0.0.1', '5211')
+    mc = mcdict.MCDict(mcaddress='127.0.0.1:5211')
 
 Access the underlying memcache Client object (note second mc)
 
-    >>> mc.mc.stats()
+    >>> mc.mc.get_stats()
     {'accepting_conns': '1',
      'auth_cmds': '0',
      'auth_errors': '0',

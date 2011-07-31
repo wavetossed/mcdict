@@ -100,8 +100,12 @@ class MCDict(collections.MutableMapping):
             #cmd = 'stats cachedump %s 2000000'
             cmd = 'cachedump %s 2000000'
             #ids = [id.split()[1].split(":")[1] for id in wcmd("stats items").split("\r\n")  if not id.startswith("END")]
-            ids = [id.split(":")[1] for id in
-                    self.mc.get_stats(stat_args="items")[0][1].keys() ]
+            thestats = self.mc.get_stats(stat_args="items")
+            if thestats == []:
+                ids = []
+            else:
+                ids = [id.split(":")[1] for id in
+                    thestats[0][1].keys() ]
             ids = set(ids)
             #for key in [id.split()[1] for id in wcmd(cmd % id).split()]:
             #keys = [[key.split()[1] for key in 
