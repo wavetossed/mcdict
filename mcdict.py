@@ -1,7 +1,7 @@
 import memcache
 import collections
 
-__version__ = "1.02"
+__version__ = "1.03"
 
 def get_stats(self, stat_args = None):
         '''Get statistics from each of the servers.
