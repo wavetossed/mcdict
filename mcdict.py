@@ -129,7 +129,7 @@ class MCDict(collections.MutableMapping):
 
     def update(self, *args, **kwargs):
         '''we have to overide this because it does not use __setitem___'''
-        for k, v in dict(*args, **kwargs).iteritems():
+        for k, v in dict(*args, **kwargs).items():
             self[k] = v
 
     def flush_all(self):
@@ -176,7 +176,7 @@ if __name__ == "__main__":
         return suite
 
     unittest.TextTestRunner(verbosity=2).run(suite())
-    print MCDict().keys()
-    print MCDict().items()
+    print(MCDict().keys())
+    print(MCDict().items())
 
 
